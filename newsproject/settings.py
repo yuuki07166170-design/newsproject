@@ -131,7 +131,7 @@ DEFAULT_AUTO_EMAIL = 'mcd2576103@stu.o-hara.ac.jp'
 EMAIL_HOST = 'smtp-mail.outlook.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'mcd2576103@stu.o-hara.ac.jp'
-EMAIL_HOST_PASSWORD = 'My07166170'
+EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 
 MEDIA_URL = '/media/'
