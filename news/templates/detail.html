@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}News Detail{% endblock %}
+{% block contents %}
+  <br>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h2>{{ object.title }}</h2>
+        <p>{{ object.comment }}</p>
+        <br>
+        <p>{{ object.posted_at }}に投稿</p>
+        <p><img src="{{ object.image1.url }}" class="img-fluid"></p>
+        {% if object.image2 %}
+        <p><img src="{{ object.image2.url }}" class="img-fluid"></p>
+        {% endif %}
+        {% if request.user == object.user %}
+        <form method="POST" action="{% url 'news:news_delete' object.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger my-2" onclick="return confirm('この投稿を削除しますか?');">削除</button>
+        </form>
+        {% endif %}
+
+        <!-- コメント機能：ここから -->
+        <hr>
+        <h4>コメント ({{ comments.count }})</h4>
+        
+        <!-- ログインしている場合のみコメント投稿フォームを表示 -->
+        {% if user.is_authenticated %}
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5>コメントを投稿</h5>
+            <form method="POST" action="{% url 'news:comment_create' object.pk %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                {{ comment_form.content }}
+              </div>
+              <button type="submit" class="btn btn-primary">投稿</button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <!-- ログインしていない場合はログインリンクを表示 -->
+        <p><a href="{% url 'accounts:login' %}">ログイン</a>してコメントを投稿</p>
+        {% endif %}
+
+        <!-- コメント一覧を表示 -->
+        <div class="mt-4">
+          {% for comment in comments %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <!-- コメントの投稿者と投稿日時 -->
+              <h6 class="card-subtitle mb-2 text-muted">
+                {{ comment.user.username }} - {{ comment.posted_at|date:"Y年m月d日 H:i" }}
+              </h6>
+              <!-- コメントの内容 -->
+              <p class="card-text">{{ comment.content }}</p>
+              <!-- 自分のコメントの場合のみ削除ボタンを表示 -->
+              {% if request.user == comment.user %}
+              <form method="POST" action="{% url 'news:comment_delete' comment.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('このコメントを削除しますか?');">削除</button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+          {% empty %}
+          <!-- コメントが1件もない場合 -->
+          <p>まだコメントがありません。</p>
+          {% endfor %}
+        </div>
+        <!-- コメント機能：ここまで -->
+      </div>
+    </div>
+  </div>
+{% endblock %}
